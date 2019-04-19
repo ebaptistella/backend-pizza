@@ -9,25 +9,83 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<start-class>br.com.eurides.example.backend.pizza.api.Application</start-class>
+	</properties>
+
 	<groupId>br.com.eurides.example.backend.pizza.api</groupId>
 	<artifactId>backend-pizza-api</artifactId>
 	<name>API pizza</name>
 
 	<dependencies>
-		
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.service</groupId>
+			<artifactId>backend-pizza-service</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.util</groupId>
+			<artifactId>backend-pizza-util</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.dto</groupId>
+			<artifactId>backend-pizza-dto</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<!-- spring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${io.springfox.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${io.springfox.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
