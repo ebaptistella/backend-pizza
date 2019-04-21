@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -24,12 +26,16 @@ import lombok.Data;
 public class PizzaTempoPreparo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "stock"))
 	@Id
-	@GeneratedValue(generator = "generator")
-	@Column(name = "cd_pizzatamanho", unique = true, nullable = false)
+	@Column(name = "cd_pizzaadicional", nullable = false)
+	@GeneratedValue(generator = "gen")
+	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "pizzaTamanho"))
 	private Long codigoPizzaTamanho;
 
 	@Column(name = "nr_tempopreparo", nullable = false)
 	private Long tempoPreparo;
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private PizzaTamanho pizzaTamanho;
 }
