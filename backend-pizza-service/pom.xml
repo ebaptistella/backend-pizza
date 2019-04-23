@@ -33,6 +33,18 @@
 			<version>${backend.pizza.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${org.modelmapper.version}</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

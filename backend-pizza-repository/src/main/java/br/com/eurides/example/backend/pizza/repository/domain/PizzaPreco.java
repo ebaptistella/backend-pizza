@@ -3,8 +3,10 @@ package br.com.eurides.example.backend.pizza.repository.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
@@ -28,7 +30,7 @@ public class PizzaPreco implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "cd_pizzaadicional", nullable = false)
+	@Column(name = "cd_pizzatamanho", nullable = false)
 	@GeneratedValue(generator = "gen")
 	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "pizzaTamanho"))
 	private Long codigoPizzaTamanho;
@@ -36,7 +38,7 @@ public class PizzaPreco implements Serializable {
 	@Column(name = "vl_preco", nullable = false)
 	private BigDecimal valorPizza;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@PrimaryKeyJoinColumn
 	private PizzaTamanho pizzaTamanho;
 }

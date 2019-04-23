@@ -1,5 +1,5 @@
 create table tb_cliente (id bigint not null, tx_clientenome varchar(200) not null, nr_documento varchar(200) not null, primary key (id));
-create table tb_pedido (id bigint not null, dt_pedido timestamp not null, nr_tempopedido bigint not null, vl_pedido decimal(19,2) not null, cd_cliente bigint not null, primary key (id));
+create table tb_pedido (id bigint not null, dt_pedido timestamp not null, dt_entrega timestamp, nr_tempopedido bigint not null, vl_pedido decimal(19,2) not null, cd_cliente bigint not null, primary key (id));
 create table tb_pedidoitem (id bigint not null, vl_preco decimal(19,2) not null, nr_tempopreparo bigint not null, cd_pizzasabor bigint, cd_pizzatamanho bigint, cd_pedido bigint, primary key (id));
 create table tb_pedidoitemadicional (id bigint not null, cd_pedidoitem binary(255) not null, vl_precoadicional decimal(19,2) not null, nr_tempopreparoadicional bigint, cd_pizzaadicional bigint, primary key (id));
 create table tb_pizzaadicionalpreco (cd_pizzaadicional bigint not null, vl_precoadicional decimal(19,2) not null, primary key (cd_pizzaadicional));

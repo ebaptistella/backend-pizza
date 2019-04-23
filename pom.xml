@@ -21,6 +21,7 @@
 		<backend.pizza.version>0.0.1-SNAPSHOT</backend.pizza.version>
 		
 		<io.springfox.version>2.9.2</io.springfox.version>
+		<org.modelmapper.version>2.3.3</org.modelmapper.version>
 	</properties>
 
 	<modules>
