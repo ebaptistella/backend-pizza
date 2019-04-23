@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>br.com.eurides.example.backend.pizza</groupId>
+		<artifactId>backend-pizza</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>br.com.eurides.example.backend.pizza.service</groupId>
+	<artifactId>backend-pizza-service</artifactId>
+	<name>Service pizza</name>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.repository</groupId>
+			<artifactId>backend-pizza-repository</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.dto</groupId>
+			<artifactId>backend-pizza-dto</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>br.com.eurides.example.backend.pizza.util</groupId>
+			<artifactId>backend-pizza-util</artifactId>
+			<version>${backend.pizza.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${org.modelmapper.version}</version>
+		</dependency>
+
+	</dependencies>
+
+</project>
