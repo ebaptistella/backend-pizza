@@ -3,14 +3,13 @@ package br.com.eurides.example.backend.pizza.repository.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -24,22 +23,15 @@ import lombok.Data;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
-@SequenceGenerator(name = "gen_pedidoitemadicional", sequenceName = "gen_pedidoitemadicional", allocationSize = 1)
-@Table(name = "tb_pedidoitemadicional")
-public class PedidoItemAdicional implements Serializable {
+@SequenceGenerator(name = "gen_pedidoadicional", sequenceName = "gen_pedidoadicional", allocationSize = 1)
+@Table(name = "tb_pedidoadicional")
+public class PedidoAdicional implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "id", nullable = false)
-	@GeneratedValue(generator = "gen_pedidoitemadicional", strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(generator = "gen_pedidoadicional", strategy = GenerationType.SEQUENCE)
 	private Long id;
-
-	@Column(name = "cd_pedidoitem", nullable = false)
-	private PedidoItem pedidoItem;
-
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "cd_pizzaadicional")
-	private PizzaAdicional adicional;
 
 	@Column(name = "vl_precoadicional", nullable = false)
 	private BigDecimal precoAdicional;
@@ -47,4 +39,11 @@ public class PedidoItemAdicional implements Serializable {
 	@Column(name = "nr_tempopreparoadicional", nullable = true)
 	private Long tempoPreparoAdicional;
 
+	@JoinColumn(name = "cd_pizzaadicional", referencedColumnName = "id", nullable = false, insertable = true, updatable = true)
+	@OneToOne
+	private PizzaAdicional adicional;
+
+	@JoinColumn(name = "cd_pedido", referencedColumnName = "id", nullable = false, insertable = true, updatable = true)
+	@ManyToOne
+	private Pedido pedido;
 }

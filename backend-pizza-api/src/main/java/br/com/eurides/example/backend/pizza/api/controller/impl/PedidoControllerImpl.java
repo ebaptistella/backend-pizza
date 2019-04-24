@@ -1,10 +1,10 @@
 package br.com.eurides.example.backend.pizza.api.controller.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,43 +28,22 @@ public class PedidoControllerImpl implements PedidoController {
 	private PedidoService pedidoService;
 
 	@Override
-	public ResponseEntity<PedidoDTO> findById(
-			@RequestParam(value = BackendPizzaConstant.PARAMETRO_ID, required = true) Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResponseEntity<Page<PedidoDTO>> findAll(Long page, Long size) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ResponseEntity<PedidoRetornoDTO> create(@RequestBody(required = true) @Validated PedidoDTO domainDTO)
 			throws Exception {
-		log.debug("==>Executando o método create: ", domainDTO);
+		log.debug("==>Executando o método create: {}", domainDTO);
 
 		Optional<PedidoRetornoDTO> pedidoRetornoDTO = pedidoService.create(domainDTO);
 		return new ResponseEntity<>(pedidoRetornoDTO.get(), HttpStatus.CREATED);
 	}
 
 	@Override
-	public ResponseEntity<PedidoDTO> update(Long id, PedidoDTO domainDTO) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public ResponseEntity<PedidoRetornoDTO> adicionais(
+			@RequestParam(name = BackendPizzaConstant.PARAMETRO_DOCUMENTO, required = true) String nroDocumento,
+			@RequestBody(required = true) List<Long> adicionaisPedido) throws Exception {
+		log.debug("==>Executando o método adicionais: {}", adicionaisPedido);
 
-	@Override
-	public ResponseEntity<?> delete(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResponseEntity<PedidoDTO> findByDocumento(String nroDocumento) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<PedidoRetornoDTO> pedidoRetornoDTO = pedidoService.adicionais(nroDocumento, adicionaisPedido);
+		return new ResponseEntity<>(pedidoRetornoDTO.get(), HttpStatus.CREATED);
 	}
 
 }

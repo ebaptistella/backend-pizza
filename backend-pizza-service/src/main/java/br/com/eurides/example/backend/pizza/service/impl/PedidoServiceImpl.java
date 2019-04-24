@@ -16,11 +16,14 @@ import br.com.eurides.example.backend.pizza.dto.PedidoDTO;
 import br.com.eurides.example.backend.pizza.dto.PedidoRetornoDTO;
 import br.com.eurides.example.backend.pizza.repository.ClienteRepository;
 import br.com.eurides.example.backend.pizza.repository.PedidoRepository;
+import br.com.eurides.example.backend.pizza.repository.PizzaAdicionalRepository;
 import br.com.eurides.example.backend.pizza.repository.PizzaSaborRepository;
 import br.com.eurides.example.backend.pizza.repository.PizzaTamanhoRepository;
 import br.com.eurides.example.backend.pizza.repository.domain.Cliente;
 import br.com.eurides.example.backend.pizza.repository.domain.Pedido;
+import br.com.eurides.example.backend.pizza.repository.domain.PedidoAdicional;
 import br.com.eurides.example.backend.pizza.repository.domain.PedidoItem;
+import br.com.eurides.example.backend.pizza.repository.domain.PizzaAdicional;
 import br.com.eurides.example.backend.pizza.repository.domain.PizzaSabor;
 import br.com.eurides.example.backend.pizza.repository.domain.PizzaTamanho;
 import br.com.eurides.example.backend.pizza.service.PedidoService;
@@ -46,15 +49,19 @@ public class PedidoServiceImpl implements PedidoService {
 	@Autowired
 	private PizzaSaborRepository pizzaSaborRepository;
 
+	@Lazy
+	@Autowired
+	private PizzaAdicionalRepository pizzaAdicionalRepository;
+
 	@Override
 	@Transactional(rollbackOn = Exception.class)
 	public Optional<PedidoRetornoDTO> create(PedidoDTO domainDTO) throws Exception {
-		log.debug("==>Executando o método create:", domainDTO);
+		log.debug("==>Executando o método create: {}", domainDTO);
 
 		Cliente clienteDomain = adquirirCliente(domainDTO.getNumeroDocumento());
 		validarPedidoAberto(clienteDomain);
 
-		Pedido pedidoDomain = persistirPedido(domainDTO, clienteDomain);
+		persistirPedido(domainDTO, clienteDomain);
 
 		return Optional.of(new PedidoRetornoDTO("Pedido em andamento"));
 	}
@@ -63,7 +70,7 @@ public class PedidoServiceImpl implements PedidoService {
 		Pedido pedidoDomain = new Pedido();
 		pedidoDomain.setCliente(clienteDomain);
 		pedidoDomain.setDataPedido(new Date());
-		pedidoDomain.setItens(adquirirPedidoItem(domainDTO));
+		pedidoDomain.setItens(adquirirPedidoItem(pedidoDomain, domainDTO));
 
 		Long tempoPedido = pedidoDomain.getItens().stream().mapToLong(PedidoItem::getTempoPreparo).sum();
 		pedidoDomain.setTempoPedido(tempoPedido);
@@ -75,7 +82,7 @@ public class PedidoServiceImpl implements PedidoService {
 		return pedidoRepository.save(pedidoDomain);
 	}
 
-	private List<PedidoItem> adquirirPedidoItem(PedidoDTO domainDTO) throws Exception {
+	private List<PedidoItem> adquirirPedidoItem(Pedido pedidoDomain, PedidoDTO domainDTO) throws Exception {
 		List<PedidoItem> itens = new ArrayList<PedidoItem>();
 
 		PizzaTamanho pizzaTamanho = adquirirPizzaTamanho(domainDTO.getPizzaTamanho());
@@ -88,6 +95,7 @@ public class PedidoServiceImpl implements PedidoService {
 		}
 
 		PedidoItem item = new PedidoItem();
+		item.setPedido(pedidoDomain);
 		item.setPizzaSabor(pizzaSabor);
 		item.setPizzaTamanho(pizzaTamanho);
 		item.setPreco(itemPreco);
@@ -132,6 +140,80 @@ public class PedidoServiceImpl implements PedidoService {
 			throw new Exception("Cliente com número de documento " + clienteDomain.getNumeroDocumento()
 					+ " já possui um pedido em andamento!");
 		}
+	}
+
+	@Override
+	public void fecharPedido(String nroDocumento) throws Exception {
+		log.debug("==>Executando o método fecharPedido: {}", nroDocumento);
+
+		Cliente clienteDomain = adquirirCliente(nroDocumento);
+		List<Pedido> pedidosAbertos = pedidoRepository.findByClienteEqualsAndDataEntregaIsNull(clienteDomain);
+		pedidosAbertos.forEach(p -> {
+			p.setDataEntrega(new Date());
+		});
+		pedidoRepository.saveAll(pedidosAbertos);
+	}
+
+	@Override
+	@Transactional(rollbackOn = Exception.class)
+	public Optional<PedidoRetornoDTO> adicionais(String nroDocumento, List<Long> adicionaisPedido) throws Exception {
+		log.debug("==>Executando o método adicionais: {}", adicionaisPedido);
+
+		Cliente clienteDomain = adquirirCliente(nroDocumento);
+		Optional<Pedido> pedidoAberto = pedidoRepository.findFirst1ByClienteEqualsAndDataEntregaIsNull(clienteDomain);
+		if (!pedidoAberto.isPresent()) {
+			throw new Exception("Cliente com número de documento " + clienteDomain.getNumeroDocumento()
+					+ " não possui pedido em andamento!");
+		}
+
+		pedidoAberto.get().setAdicionais(adquirirItensAdicionais(pedidoAberto.get(), adicionaisPedido));
+
+		Long tempoPedido = pedidoAberto.get().getTempoPedido();
+		BigDecimal valorPedido = pedidoAberto.get().getValorPedido();
+
+		if (pedidoAberto.get().getAdicionais() != null) {
+			tempoPedido = tempoPedido + pedidoAberto.get().getAdicionais().stream()
+					.map(PedidoAdicional::getTempoPreparoAdicional).reduce(0L, Long::sum);
+
+			valorPedido = valorPedido.add(pedidoAberto.get().getAdicionais().stream()
+					.map(PedidoAdicional::getPrecoAdicional).reduce(BigDecimal.ZERO, BigDecimal::add));
+		}
+		pedidoAberto.get().setTempoPedido(tempoPedido);
+		pedidoAberto.get().setValorPedido(valorPedido);
+
+		pedidoRepository.save(pedidoAberto.get());
+
+		return Optional.of(new PedidoRetornoDTO("Adicionais OK"));
+	}
+
+	private List<PedidoAdicional> adquirirItensAdicionais(Pedido pedidoDomain, List<Long> adicionaisPedido)
+			throws Exception {
+		List<PedidoAdicional> listPedidoAdicional = new ArrayList<PedidoAdicional>();
+
+		for (Long adicional : adicionaisPedido) {
+			PizzaAdicional pizzaAdicional = pizzaAdicionalRepository.findById(adicional)
+					.orElseThrow(() -> new Exception("Adicional " + adicional + " não foi encontrado."));
+
+			PedidoAdicional pedidoAdicional = new PedidoAdicional();
+			pedidoAdicional.setAdicional(pizzaAdicional);
+			pedidoAdicional.setPedido(pedidoDomain);
+
+			BigDecimal precoAdicional = BigDecimal.ZERO;
+			if (pizzaAdicional.getPrecoAdicional().getValorAdicional() != null) {
+				precoAdicional = pizzaAdicional.getPrecoAdicional().getValorAdicional();
+			}
+			pedidoAdicional.setPrecoAdicional(precoAdicional);
+
+			Long tempoPreparoAdicional = 0L;
+			if (pizzaAdicional.getTempoAdicional() != null) {
+				tempoPreparoAdicional = pizzaAdicional.getTempoAdicional();
+			}
+			pedidoAdicional.setTempoPreparoAdicional(tempoPreparoAdicional);
+
+			listPedidoAdicional.add(pedidoAdicional);
+		}
+
+		return listPedidoAdicional;
 	}
 
 }

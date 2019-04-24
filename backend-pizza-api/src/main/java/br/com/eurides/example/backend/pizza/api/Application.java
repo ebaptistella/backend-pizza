@@ -6,10 +6,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EntityScan("br.com.eurides.example.backend.pizza.repository.domain")
 @EnableJpaRepositories("br.com.eurides.example.backend.pizza.repository")
+@EnableTransactionManagement
 @ComponentScan(basePackages = { "br.com.eurides.example.backend.pizza" })
 @PropertySource(ignoreResourceNotFound = false, value = "classpath:backend-pizza-${spring.profiles.active}.properties")
 public class Application {

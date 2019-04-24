@@ -9,7 +9,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -61,7 +60,10 @@ public class Pedido implements Serializable {
 	@Column(name = "nr_tempopedido", nullable = false)
 	private Long tempoPedido;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "cd_pedido")
-	private List<PedidoItem> itens = new ArrayList<>();
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+	private List<PedidoItem> itens = new ArrayList<PedidoItem>();
+
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+	private List<PedidoAdicional> adicionais = new ArrayList<PedidoAdicional>();
+
 }
