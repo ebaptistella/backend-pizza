@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "br.com.eurides.example.backend.pizza" })
 @PropertySource(ignoreResourceNotFound = false, value = "classpath:backend-pizza-${spring.profiles.active}.properties")
+@PropertySource(ignoreResourceNotFound = false, value = "classpath:application-${spring.profiles.active}.properties")
+@PropertySource(ignoreResourceNotFound = false, value = "classpath:application.properties")
 public class Application {
 
 	public static void main(String[] args) {
