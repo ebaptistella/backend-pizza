@@ -55,15 +55,13 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public Optional<PedidoRetornoDTO> create(PedidoDTO domainDTO) throws Exception {
+	public void create(PedidoDTO domainDTO) throws Exception {
 		log.debug("==>Executando o método create: {}", domainDTO);
 
 		Cliente clienteDomain = adquirirCliente(domainDTO.getNumeroDocumento());
 		validarPedidoAberto(clienteDomain);
 
 		persistirPedido(domainDTO, clienteDomain);
-
-		return Optional.of(new PedidoRetornoDTO("Pedido em andamento"));
 	}
 
 	private Pedido persistirPedido(PedidoDTO domainDTO, Cliente clienteDomain) throws Exception {
@@ -156,7 +154,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public Optional<PedidoRetornoDTO> adicionais(String nroDocumento, List<Long> adicionaisPedido) throws Exception {
+	public void adicionais(String nroDocumento, List<Long> adicionaisPedido) throws Exception {
 		log.debug("==>Executando o método adicionais: {}", adicionaisPedido);
 
 		Cliente clienteDomain = adquirirCliente(nroDocumento);
@@ -182,8 +180,6 @@ public class PedidoServiceImpl implements PedidoService {
 		pedidoAberto.get().setValorPedido(valorPedido);
 
 		pedidoRepository.save(pedidoAberto.get());
-
-		return Optional.of(new PedidoRetornoDTO("Adicionais OK"));
 	}
 
 	private List<PedidoAdicional> adquirirItensAdicionais(Pedido pedidoDomain, List<Long> adicionaisPedido)
@@ -214,6 +210,31 @@ public class PedidoServiceImpl implements PedidoService {
 		}
 
 		return listPedidoAdicional;
+	}
+
+	@Override
+	public Optional<PedidoRetornoDTO> findByDocumento(String nroDocumento) throws Exception {
+		log.debug("==>Executando o método findByDocumento: {}", nroDocumento);
+
+		Cliente clienteDomain = adquirirCliente(nroDocumento);
+
+		Optional<Pedido> pedidoDomainOptional = pedidoRepository
+				.findFirst1ByClienteEqualsAndDataEntregaIsNull(clienteDomain);
+		if (!pedidoDomainOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		Pedido pedidoDomain = pedidoDomainOptional.get();
+		String pizzaTamanho = pedidoDomain.getItens().stream().findFirst().get().getPizzaTamanho().getNome();
+		String pizzaSabor = pedidoDomain.getItens().stream().findFirst().get().getPizzaSabor().getNome();
+		BigDecimal valorTotal = pedidoDomain.getValorPedido();
+		Long tempoPreparo = pedidoDomain.getTempoPedido();
+		List<String> adicionais = new ArrayList<String>();
+		pedidoDomain.getAdicionais().stream().forEach(a -> {
+			adicionais.add(a.getAdicional().getAdicionalNome());
+		});
+
+		return Optional.of(new PedidoRetornoDTO(pizzaTamanho, pizzaSabor, valorTotal, tempoPreparo, adicionais));
 	}
 
 }
