@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -32,18 +33,22 @@ public class PedidoItem implements Serializable {
 	@GeneratedValue(generator = "gen_pedidoitem", strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "cd_pizzatamanho")
-	private PizzaTamanho pizzaTamanho;
-
-	@OneToOne
-	@JoinColumn(name = "cd_pizzasabor")
-	private PizzaSabor pizzaSabor;
-
 	@Column(name = "vl_preco", nullable = false)
 	private BigDecimal preco;
 
 	@Column(name = "nr_tempopreparo", nullable = false)
 	private Long tempoPreparo;
+
+	@JoinColumn(name = "cd_pizzatamanho", referencedColumnName = "id", nullable = false, insertable = true, updatable = true)
+	@OneToOne
+	private PizzaTamanho pizzaTamanho;
+
+	@JoinColumn(name = "cd_pizzasabor", referencedColumnName = "id", nullable = false, insertable = true, updatable = true)
+	@OneToOne
+	private PizzaSabor pizzaSabor;
+
+	@JoinColumn(name = "cd_pedido", referencedColumnName = "id", nullable = false, insertable = true, updatable = true)
+	@ManyToOne
+	private Pedido pedido;
 
 }

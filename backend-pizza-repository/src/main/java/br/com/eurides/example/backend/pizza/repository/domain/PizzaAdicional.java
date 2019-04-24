@@ -2,14 +2,11 @@ package br.com.eurides.example.backend.pizza.repository.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -39,7 +36,6 @@ public class PizzaAdicional implements Serializable {
 	@Column(name = "nr_tempoadicional", nullable = true)
 	private Long tempoAdicional;
 
-	@OneToOne(mappedBy = "pizzaAdicional", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "cd_pizzatamanho", insertable = false, updatable = false)
+	@OneToOne(mappedBy = "pizzaAdicional")
 	private PizzaAdicionalPreco precoAdicional;
 }
