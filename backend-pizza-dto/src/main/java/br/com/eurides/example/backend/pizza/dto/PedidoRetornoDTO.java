@@ -1,6 +1,8 @@
 package br.com.eurides.example.backend.pizza.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -17,7 +19,18 @@ public class PedidoRetornoDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "Status do pedido")
-	private String statusPedido;
+	@ApiModelProperty(notes = "Tamanho da pizza")
+	private String pizzaTamanho;
 
+	@ApiModelProperty(notes = "Sabor da pizza")
+	private String pizzaSabor;
+
+	@ApiModelProperty(notes = "Valor total")
+	private BigDecimal valorTotal;
+
+	@ApiModelProperty(notes = "Tempo de preparo")
+	private Long tempoPreparo;
+
+	@ApiModelProperty(notes = "Adicionais")
+	private List<String> adicionais;
 }

@@ -28,21 +28,34 @@ public class PedidoControllerImpl implements PedidoController {
 	private PedidoService pedidoService;
 
 	@Override
-	public ResponseEntity<PedidoRetornoDTO> create(@RequestBody(required = true) @Validated PedidoDTO domainDTO)
-			throws Exception {
+	public ResponseEntity<Void> create(@RequestBody(required = true) @Validated PedidoDTO domainDTO) throws Exception {
 		log.debug("==>Executando o método create: {}", domainDTO);
 
-		Optional<PedidoRetornoDTO> pedidoRetornoDTO = pedidoService.create(domainDTO);
-		return new ResponseEntity<>(pedidoRetornoDTO.get(), HttpStatus.CREATED);
+		pedidoService.create(domainDTO);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@Override
-	public ResponseEntity<PedidoRetornoDTO> adicionais(
+	public ResponseEntity<Void> adicionais(
 			@RequestParam(name = BackendPizzaConstant.PARAMETRO_DOCUMENTO, required = true) String nroDocumento,
 			@RequestBody(required = true) List<Long> adicionaisPedido) throws Exception {
 		log.debug("==>Executando o método adicionais: {}", adicionaisPedido);
 
-		Optional<PedidoRetornoDTO> pedidoRetornoDTO = pedidoService.adicionais(nroDocumento, adicionaisPedido);
+		pedidoService.adicionais(nroDocumento, adicionaisPedido);
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@Override
+	public ResponseEntity<PedidoRetornoDTO> findByDocumento(
+			@RequestParam(name = BackendPizzaConstant.PARAMETRO_DOCUMENTO, required = true) String nroDocumento)
+			throws Exception {
+		log.debug("==>Executando o método findByDocumento: {}", nroDocumento);
+
+		Optional<PedidoRetornoDTO> pedidoRetornoDTO = pedidoService.findByDocumento(nroDocumento);
+		if (!pedidoRetornoDTO.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+
 		return new ResponseEntity<>(pedidoRetornoDTO.get(), HttpStatus.CREATED);
 	}
 

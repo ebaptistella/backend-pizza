@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,16 +21,22 @@ import io.swagger.annotations.ApiParam;
 				MediaType.APPLICATION_XML_VALUE })
 public interface PedidoController {
 
-	@ApiOperation(value = BackendPizzaConstant.PATH_CREATE, response = PedidoRetornoDTO.class)
+	@ApiOperation(value = BackendPizzaConstant.PATH_CREATE, response = Void.class)
 	@PostMapping(BackendPizzaConstant.PATH_CREATE)
-	public abstract ResponseEntity<PedidoRetornoDTO> create(
+	public abstract ResponseEntity<Void> create(
 			@ApiParam(value = BackendPizzaConstant.PARAMETRO_DOMAIN_DTO, required = true) PedidoDTO domainDTO)
 			throws Exception;
 
-	@ApiOperation(value = BackendPizzaConstant.PATH_PEDIDO_ADICIONAIS, response = PedidoRetornoDTO.class)
+	@ApiOperation(value = BackendPizzaConstant.PATH_PEDIDO_ADICIONAIS, response = Void.class)
 	@PostMapping(BackendPizzaConstant.PATH_PEDIDO_ADICIONAIS)
-	public abstract ResponseEntity<PedidoRetornoDTO> adicionais(
+	public abstract ResponseEntity<Void> adicionais(
 			@ApiParam(value = BackendPizzaConstant.PARAMETRO_DOCUMENTO, required = true) String nroDocumento,
 			@ApiParam(value = BackendPizzaConstant.PARAMETRO_ADICIONAIS, required = true) List<Long> adicionaisPedido)
+			throws Exception;
+
+	@ApiOperation(value = BackendPizzaConstant.PATH_FIND_BY_DOCUMENTO, response = PedidoRetornoDTO.class)
+	@GetMapping(BackendPizzaConstant.PATH_FIND_BY_DOCUMENTO)
+	public abstract ResponseEntity<PedidoRetornoDTO> findByDocumento(
+			@ApiParam(value = BackendPizzaConstant.PARAMETRO_DOCUMENTO, required = true) String nroDocumento)
 			throws Exception;
 }
